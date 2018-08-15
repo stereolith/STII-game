@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         widget.cpp \
-    zeichenfeld.cpp
+    zeichenfeld.cpp \
+    piece.cpp \
+    fallingpiece.cpp
 
 HEADERS += \
         widget.h \
-    zeichenfeld.h
+    zeichenfeld.h \
+    piece.h \
+    fallingpiece.h
 
 FORMS += \
         widget.ui

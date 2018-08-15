@@ -1,10 +1,10 @@
-#ifndef ZEICHENFELD_H
-#define ZEICHENFELD_H
+#include "piece.h"
 
 #include <QWidget>
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
+
 
 class zeichenFeld : public QWidget
 {
@@ -18,14 +18,13 @@ public:
     void setActive(bool a);
 private:
     bool active;
-    QPoint posPlayer;
-    QColor playerColor;
     int buttonPressed;
 
+    QTimer *timer;
+    piece player;
+private slots:
+    void updatePieces();
 protected:
     void paintEvent(QPaintEvent *event);
     void keyPressEvent(QKeyEvent *event);
 };
-
-
-#endif // ZEICHENFELD_H

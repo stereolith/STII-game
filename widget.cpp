@@ -42,14 +42,13 @@ void meinWidget::startPause(void)
 
 void meinWidget::saveFile(void)
 {
-    /*
     QFileDialog dialog(this);
     QString fileName;
     QFile file;
 
     dialog.setFileMode(QFileDialog::AnyFile);
     fileName = dialog.getSaveFileName(this,
-                                      tr("Speichern als"), ".", tr("PosXFormat (*.pxf)"));
+                                      tr("Speichern als"), ".", tr("stII-savegame (*.s2g)"));
 
     if (fileName.isNull()==false)
     {
@@ -64,19 +63,17 @@ void meinWidget::saveFile(void)
         file.close();
         return;
     }
-    */
 }
 
 void meinWidget::loadFile(void)
 {
-    /*
     QFileDialog dialog(this);
     QString fileName;
     QFile file;
 
     dialog.setFileMode(QFileDialog::AnyFile);
     fileName = dialog.getOpenFileName(this,
-                                      tr("Speichern als"), ".", tr("PosXFormat (*.pxf)"));
+                                      tr("Speichern als"), ".", tr("stII-savegame (*.s2g)"));
 
     if (fileName.isNull()==false)
     {
@@ -91,6 +88,5 @@ void meinWidget::loadFile(void)
         file.close();
         return;
     }
-    */
 }
 

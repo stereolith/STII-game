@@ -8,29 +8,37 @@
 zeichenFeld::zeichenFeld(QWidget *parent)
     : QWidget(parent)
 {
-    posPlayer.setX(this->width()/2-10);
-    posPlayer.setY(375);
+    player.setPos(this->width()/2-10, 375);
+    player.setWidth(10);
     setFocusPolicy(Qt::StrongFocus); //FocusPolicy to accept keyboard input
     setActive(false);
     active = false;
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updatePieces()));
+    timer->start(1000);
+}
+
+void zeichenFeld::updatePieces()
+{
+    player.move(12,0);
+    update();
 }
 
 void zeichenFeld::paintEvent(QPaintEvent * )
 {
     QPainter painter;
+    player.paint(&painter, this);
 
-    painter.begin( this );
-    painter.fillRect ( posPlayer.x(), posPlayer.y(), 20, 20, playerColor );
-    painter.end();
 }
 
 void zeichenFeld::keyPressEvent(QKeyEvent *event)
 {
     if(active) {
         if(event->key() == Qt::Key_Right) {
-            posPlayer.rx() += 25;
+            player.move(25, 0);
         } else if (event->key() == Qt::Key_Left) {
-            posPlayer.rx() -= 25;
+            player.move(-25, 0);
         }
         update();
     }
@@ -38,12 +46,11 @@ void zeichenFeld::keyPressEvent(QKeyEvent *event)
 void zeichenFeld::setActive(bool a)
 {
     active = a;
+    player.setActive(a);
     if(a) {
-        playerColor.setRgb(101, 81, 255);
         setPalette(QPalette(QColor(211, 250, 200)));
         setAutoFillBackground(true);
     }else{
-        playerColor.setRgb(207, 201, 255);
         setPalette(QPalette(QColor(241, 255, 237)));
         setAutoFillBackground(true);
     }
@@ -52,8 +59,8 @@ void zeichenFeld::serialize(QFile &file)
 {
     QTextStream out(&file);
 
-    out << "PositionXFormat" << endl;
-    out << "x " << posPlayer.x() << endl;
+    out << "stII-savegame" << endl;
+    out << "playerPos x " << player.x() << endl;
 }
 
 void zeichenFeld::deserialize(QFile &file)
@@ -63,27 +70,26 @@ void zeichenFeld::deserialize(QFile &file)
     QString header;
 
     in >> header;
-    if (header != "PositionXFormat")
+    if (header != "stII-savegame")
     {
         QMessageBox::warning(this, tr("Formatfehler"),
-                             tr("Das ist keine PositionXFormat-Datei."),QMessageBox::Ok);
+                             tr("Das ist kein stII-savegame."),QMessageBox::Ok);
         return;
     }
 
     in >> c; //Zeilenumbruch
 
-    in >> c; //Steuerzeichen (x) einlesen
+    QString playerPosSting = in.readLine();
 
-    if (c!='x')
+    if (!playerPosSting.contains("playerPos x "))
     {
         QMessageBox::warning(this, tr("Objektfehler"),
                              tr("Unbekanntes Steuerzeichen"),QMessageBox::Ok);
         return;
+    } else {
+        playerPosSting.remove("playerPos x ");
+        player.setX(playerPosSting.toInt());
     }
-    int x;
-    in >> x;
-    posPlayer.setX(x);
-
     update();
 }
 
