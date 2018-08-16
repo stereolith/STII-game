@@ -1,6 +1,8 @@
 #ifndef FALLINGPIECE_H
 #define FALLINGPIECE_H
 
+#include "piece.h"
+
 #include <QWidget>
 
 class fallingPiece : public piece

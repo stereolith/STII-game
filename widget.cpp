@@ -10,6 +10,9 @@ meinWidget::meinWidget(QWidget *parent)
     start->setFont(QFont("Times", 16, QFont::Bold));
     connect(start, SIGNAL(clicked()), this, SLOT(startPause()));
 
+    points = new QLabel("Punkte");
+    points->setFont(QFont("Times", 16));
+
     QPushButton *saver = new QPushButton(tr("Sichern"));
     saver->setFont(QFont("Times", 16, QFont::Bold));
     connect(saver, SIGNAL(clicked()), this, SLOT(saveFile()));
@@ -17,24 +20,26 @@ meinWidget::meinWidget(QWidget *parent)
     loader->setFont(QFont("Times", 16, QFont::Bold));
     connect(loader, SIGNAL(clicked()), this, SLOT(loadFile()));
 
-    meinZeichenFeld = new zeichenFeld;
+    meinspielFeld = new spielFeld;
+    meinspielFeld->setPointsPtr(points);
 
 
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->addWidget(start, 0, 0);
+    gridLayout->addWidget(points, 0, 1);
     gridLayout->addWidget(saver, 0, 4);
     gridLayout->addWidget(loader, 0, 5);
-    gridLayout->addWidget(meinZeichenFeld, 1, 0, 6, 6);
+    gridLayout->addWidget(meinspielFeld, 1, 0, 6, 6);
     setLayout(gridLayout);
 }
 
 void meinWidget::startPause(void)
 {
-    if(meinZeichenFeld->getActive()) {
-        meinZeichenFeld->setActive(false);
+    if(meinspielFeld->getActive()) {
+        meinspielFeld->setActive(false);
         start->setText(tr("Start"));
     }else{
-        meinZeichenFeld->setActive(true);
+        meinspielFeld->setActive(true);
         start->setText(tr("Pause"));
     }
 
@@ -59,7 +64,7 @@ void meinWidget::saveFile(void)
                                  tr("Folgende Datei kann nicht verwendet werden: ") + fileName,QMessageBox::Ok);
         }
 
-        meinZeichenFeld->serialize(file);
+        meinspielFeld->serialize(file);
         file.close();
         return;
     }
@@ -84,7 +89,7 @@ void meinWidget::loadFile(void)
                                  tr("Folgende Datei kann nicht geöffnet werden: ") + fileName,QMessageBox::Ok);
         }
 
-        meinZeichenFeld->deserialize(file);
+        meinspielFeld->deserialize(file);
         file.close();
         return;
     }

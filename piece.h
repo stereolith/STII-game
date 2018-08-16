@@ -9,6 +9,7 @@ class piece
 public:
     piece();
     piece(int x, int y, int width);
+    piece(int x, int y, int w, QColor c);
     void move(int dx, int dy);
     void setPos(int x, int y);
     int x(){return pos.x();}
@@ -19,15 +20,19 @@ public:
     void setWidth(int w){width = w;}
     void setColor(QColor c);
     int getWidth(){return width;}
-    void setActive(bool a);
-    void paint(QPainter* painter, QWidget* context);
+    void setFilled(bool f){filled = f;}
+    void setActive(bool a){active = a;}
+    void paint(QPainter* painter);
 private:
     QPoint pos;
-    QColor *color;
+
     QColor activeColor;
     QColor inactiveColor;
+    QColor getColor();
+
     int width;
     int edges;
+    bool filled;
     bool active;
 };
 

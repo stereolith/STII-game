@@ -5,13 +5,24 @@ piece::piece()
     pos.setX(0);
     pos.setY(0);
     width = 10;
+    filled = true;
     setColor(QColor(207, 201, 255));
+    setActive(true);
 }
 piece::piece(int x, int y, int w)
 {
     pos.setX(x);
     pos.setY(y);
     width = w;
+    filled = true;
+}
+piece::piece(int x, int y, int w, QColor c)
+{
+    pos.setX(x);
+    pos.setY(y);
+    width = w;
+    setColor(c);
+    filled = true;
 }
 
 void piece::move(int dx, int dy)
@@ -26,32 +37,27 @@ void piece::setPos(int x, int y)
 }
 void piece::setColor(QColor c)
 {
+    //Piece color in HSL, für Modifiktaion des saturation-Wertes für ausgegrautes pausiertes Spielfeld
     activeColor = c;
-
     activeColor.toHsl();
-    int lightness = activeColor.lightness() + 40;
-    if(lightness > 240) lightness = 240;
-    inactiveColor.setHsl(activeColor.hslHue(), activeColor.hslSaturation(), lightness, activeColor.alpha() );
+    inactiveColor.setHsl(activeColor.hslHue(), 20, activeColor.lightness(), activeColor.alpha() );
+}
+QColor piece::getColor()
+{
     if(active) {
-        color = &activeColor;
-    }else{
-        color = &inactiveColor;
+        return activeColor;
+    } else {
+        return inactiveColor;
     }
 }
 
-void piece::paint(QPainter* painter, QWidget *context)
+void piece::paint(QPainter* painter)
 {
-    painter->begin( context );
-    painter->fillRect ( pos.x(), pos.y(), width, width, *color );
-    painter->end();
-}
-void piece::setActive(bool a)
-{
-    active = a;
-    if(active) {
-        color = &activeColor;
-    }else{
-        color = &inactiveColor;
+    if(filled) {
+        painter->fillRect ( pos.x(), pos.y(), width, width, getColor() );
+    } else {
+        painter->setPen(getColor());
+        painter->drawRect ( pos.x(), pos.y(), width, width );
     }
 }
 

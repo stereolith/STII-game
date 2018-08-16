@@ -2,17 +2,19 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <QWidget>
-#include "zeichenfeld.h"
+#include <QLabel>
+
+#include "spielFeld.h"
 class meinWidget : public QWidget
 {
      Q_OBJECT
 public:
-    zeichenFeld *meinZeichenFeld;
+    spielFeld *meinspielFeld;
     meinWidget(QWidget *parent = 0);
-
+    QLabel *getPointsPrt(){return points;}
 private:
     QPushButton *start;
+    QLabel *points;
 private slots:
     void startPause(void);
     void saveFile(void);

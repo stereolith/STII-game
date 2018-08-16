@@ -1,38 +1,60 @@
 #include <QtGui>
-#include <iostream>
+#include <QString>
 #include <QMessageBox>
 
 #include <iostream>
-#include "zeichenFeld.h"
+#include "spielFeld.h"
 
-zeichenFeld::zeichenFeld(QWidget *parent)
+spielFeld::spielFeld(QWidget *parent)
     : QWidget(parent)
 {
     player.setPos(this->width()/2-10, 375);
     player.setWidth(10);
     setFocusPolicy(Qt::StrongFocus); //FocusPolicy to accept keyboard input
     setActive(false);
-    active = false;
+
+    points = 0;
+    playerLives = new lives(this);
+
+    spawnFallingPiece();
 
     timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updatePieces()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
     timer->start(1000);
 }
 
-void zeichenFeld::updatePieces()
+void spielFeld::updateEvent()
 {
-    player.move(12,0);
-    update();
+    if(active)
+    {
+        for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
+            i->fall();
+        }
+        points += 20;
+        update();
+    }
+}
+void spielFeld::spawnFallingPiece()
+{
+    fallingPiece pc;
+    pc.setActive(false);
+    pc.setColor(Qt::red);
+    fallingPieces.push_back(pc);
 }
 
-void zeichenFeld::paintEvent(QPaintEvent * )
+void spielFeld::paintEvent(QPaintEvent * )
 {
     QPainter painter;
-    player.paint(&painter, this);
-
+    painter.begin( this );
+    player.paint(&painter);
+    for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
+        i->paint(&painter);
+    }
+    painter.end();
+    pointsLabel->setText(QString::number(points) + " Punkte");
 }
 
-void zeichenFeld::keyPressEvent(QKeyEvent *event)
+void spielFeld::keyPressEvent(QKeyEvent *event)
 {
     if(active) {
         if(event->key() == Qt::Key_Right) {
@@ -43,10 +65,13 @@ void zeichenFeld::keyPressEvent(QKeyEvent *event)
         update();
     }
 }
-void zeichenFeld::setActive(bool a)
+void spielFeld::setActive(bool a)
 {
     active = a;
     player.setActive(a);
+    for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
+        i->setActive(a);
+    }
     if(a) {
         setPalette(QPalette(QColor(211, 250, 200)));
         setAutoFillBackground(true);
@@ -55,7 +80,7 @@ void zeichenFeld::setActive(bool a)
         setAutoFillBackground(true);
     }
 }
-void zeichenFeld::serialize(QFile &file)
+void spielFeld::serialize(QFile &file)
 {
     QTextStream out(&file);
 
@@ -63,7 +88,7 @@ void zeichenFeld::serialize(QFile &file)
     out << "playerPos x " << player.x() << endl;
 }
 
-void zeichenFeld::deserialize(QFile &file)
+void spielFeld::deserialize(QFile &file)
 {
     QTextStream in(&file);
     char c;

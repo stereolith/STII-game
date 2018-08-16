@@ -1,29 +1,38 @@
 #include "piece.h"
+#include "fallingpiece.h"
+#include "lives.h"
 
 #include <QWidget>
 #include <QFile>
+#include <QLabel>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <vector>
 
-
-class zeichenFeld : public QWidget
+class spielFeld : public QWidget
 {
 Q_OBJECT
 public:
-    zeichenFeld(QWidget *parent = 0);
+    spielFeld(QWidget *parent = 0);
 
     void serialize(QFile &file);
     void deserialize(QFile &file);
     bool getActive() {return active;}
     void setActive(bool a);
+    void setPointsPtr(QLabel *ptr){pointsLabel = ptr;}
 private:
     bool active;
     int buttonPressed;
-
     QTimer *timer;
+    QLabel *pointsLabel;
+    int points;
+
     piece player;
+    lives *playerLives;
+    std::vector<fallingPiece> fallingPieces;
+    void spawnFallingPiece();
 private slots:
-    void updatePieces();
+    void updateEvent();
 protected:
     void paintEvent(QPaintEvent *event);
     void keyPressEvent(QKeyEvent *event);
