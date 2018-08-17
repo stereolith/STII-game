@@ -1,12 +1,13 @@
 #include "fallingpiece.h"
 
-fallingPiece::fallingPiece()
+fallingPiece::fallingPiece(QWidget *parent)
+    : piece(parent)
 {
     velocity = QPoint(0,-10);
-    setPos(200, 20);
+    move(200, 20);
 }
 
 void fallingPiece::fall()
 {
-    move(velocity.x(), velocity.y());
+    moveBy(velocity.x(), velocity.y());
 }

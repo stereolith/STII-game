@@ -29,7 +29,7 @@ private:
 
     piece player;
     lives *playerLives;
-    std::vector<fallingPiece> fallingPieces;
+    std::vector<fallingPiece*> fallingPieces;
     void spawnFallingPiece();
 private slots:
     void updateEvent();

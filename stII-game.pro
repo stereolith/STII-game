@@ -27,16 +27,17 @@ SOURCES += \
         main.cpp \
         widget.cpp \
     piece.cpp \
-    fallingpiece.cpp \
     spielfeld.cpp \
-    lives.cpp
+    lives.cpp \
+    fallingpiece.cpp
 
 HEADERS += \
         widget.h \
     piece.h \
-    fallingpiece.h \
     spielfeld.h \
-    lives.h
+    lives.h \
+    lives.h \
+    fallingpiece.h
 
 FORMS += \
         widget.ui

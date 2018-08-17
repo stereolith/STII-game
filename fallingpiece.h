@@ -8,7 +8,7 @@
 class fallingPiece : public piece
 {
 public:
-    fallingPiece();
+    fallingPiece(QWidget *parent);
     void fall();
 private:
     QPoint velocity;

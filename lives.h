@@ -15,7 +15,7 @@ public:
 private:
     int maxLives;
     int noLives;
-    std::vector<piece> livePieces;
+    std::vector<piece*> livePieces;
 protected:
     void paintEvent(QPaintEvent * );
 };

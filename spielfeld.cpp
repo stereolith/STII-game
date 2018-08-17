@@ -8,7 +8,8 @@
 spielFeld::spielFeld(QWidget *parent)
     : QWidget(parent)
 {
-    player.setPos(this->width()/2-10, 375);
+    player.setParent(this);
+    player.move(this->width()/2-10, 375);
     player.setWidth(10);
     setFocusPolicy(Qt::StrongFocus); //FocusPolicy to accept keyboard input
     setActive(false);
@@ -27,8 +28,8 @@ void spielFeld::updateEvent()
 {
     if(active)
     {
-        for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
-            i->fall();
+        for(int i=0; i<fallingPieces.size(); i++){
+            fallingPieces[i]->fall();
         }
         points += 20;
         update();
@@ -36,31 +37,27 @@ void spielFeld::updateEvent()
 }
 void spielFeld::spawnFallingPiece()
 {
-    fallingPiece pc;
-    pc.setActive(false);
-    pc.setColor(Qt::red);
-    fallingPieces.push_back(pc);
+    fallingPieces.push_back(new fallingPiece(this));
+    fallingPieces.back()->setColor(Qt::red);
+    fallingPieces.back()->setActive(false);
 }
 
 void spielFeld::paintEvent(QPaintEvent * )
 {
-    QPainter painter;
-    painter.begin( this );
-    player.paint(&painter);
-    for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
-        i->paint(&painter);
-    }
-    painter.end();
     pointsLabel->setText(QString::number(points) + " Punkte");
+    for(int i=0; i<fallingPieces.size(); i++){
+        fallingPieces[i]->paint();
+    }
+    player.paint();
 }
 
 void spielFeld::keyPressEvent(QKeyEvent *event)
 {
     if(active) {
         if(event->key() == Qt::Key_Right) {
-            player.move(25, 0);
+            player.moveBy(25, 0);
         } else if (event->key() == Qt::Key_Left) {
-            player.move(-25, 0);
+            player.moveBy(-25, 0);
         }
         update();
     }
@@ -69,8 +66,8 @@ void spielFeld::setActive(bool a)
 {
     active = a;
     player.setActive(a);
-    for(std::vector<fallingPiece>::iterator i=fallingPieces.begin(); i!=fallingPieces.end(); ++i){
-        i->setActive(a);
+    for(int i=0; i<fallingPieces.size(); i++){
+        fallingPieces[i]->setActive(a);
     }
     if(a) {
         setPalette(QPalette(QColor(211, 250, 200)));
@@ -113,7 +110,7 @@ void spielFeld::deserialize(QFile &file)
         return;
     } else {
         playerPosSting.remove("playerPos x ");
-        player.setX(playerPosSting.toInt());
+        //player.setX(playerPosSting.toInt());
     }
     update();
 }

@@ -3,29 +3,28 @@
 lives::lives(QWidget *parent) : QWidget(parent)
 {
     maxLives = 3;
-    noLives = 1;
-    int width = 20;
+    noLives = 3;
+    int width = 30;
     int offsetX = 0;
     for(int i=0; i < maxLives; i++){
-        piece p(offsetX, 0, width, Qt::red);
-        livePieces.push_back(p);
+        livePieces.push_back(new piece(this, offsetX, 0, width, Qt::red));
         offsetX += width;
         offsetX += 10;
     }
-    this->move(530,10);
+    this->move(500,10);
 }
 
 void lives::paintEvent(QPaintEvent * )
 {
     QPainter painter;
     painter.begin( this );
-    for(int i=0; i < maxLives;i++){//maxLives = 3    noLives = 1
+    for(int i=0; i < maxLives;i++){
         if(i < noLives) {
-            livePieces[i].setFilled(true);
+            livePieces[i]->setFilled(true);
         } else {
-            livePieces[i].setFilled(false);
+            livePieces[i]->setFilled(false);
         }
-        livePieces[i].paint(&painter);
+        livePieces[i]->paint();
     }
     painter.end();
 }

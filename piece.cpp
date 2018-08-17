@@ -1,40 +1,50 @@
 #include "piece.h"
 
-piece::piece()
+piece::piece(QWidget *parent)
+    : QWidget(parent)
 {
-    pos.setX(0);
-    pos.setY(0);
+    move(0,0);
     width = 10;
+    shape = new QPointF[4];
+    shape[0] = QPointF(0, 0); //default shape: rectangle
+    shape[1] = QPointF(width, 0);
+    shape[2] = QPointF(width, width);
+    shape[3] = QPointF(0, width);
     filled = true;
     setColor(QColor(207, 201, 255));
     setActive(true);
 }
-piece::piece(int x, int y, int w)
+piece::piece(QWidget *parent, int x, int y, int w)
+    : QWidget(parent)
 {
-    pos.setX(x);
-    pos.setY(y);
+    move(x,y);
     width = w;
+    shape = new QPointF[4];
+    shape[0] = QPointF(0, 0); //default shape: rectangle
+    shape[1] = QPointF(width, 0);
+    shape[2] = QPointF(width, width);
+    shape[3] = QPointF(0, width);
     filled = true;
 }
-piece::piece(int x, int y, int w, QColor c)
+piece::piece(QWidget *parent, int x, int y, int w, QColor c)
+    : QWidget(parent)
 {
-    pos.setX(x);
-    pos.setY(y);
+    move(x,y);
     width = w;
+    shape = new QPointF[4];
+    shape[0] = QPointF(0, 0); //default shape: rectangle
+    shape[1] = QPointF(width, 0);
+    shape[2] = QPointF(width, width);
+    shape[3] = QPointF(0, width);
     setColor(c);
     filled = true;
 }
 
-void piece::move(int dx, int dy)
+void piece::moveBy(int dx, int dy)
 {
-    pos.rx() += dx;
-    pos.ry() -= dy;
+    move(pos().x() + dx, pos().y() + dy);
 }
-void piece::setPos(int x, int y)
-{
-    pos.setX(x);
-    pos.setY(y);
-}
+
 void piece::setColor(QColor c)
 {
     //Piece color in HSL, für Modifiktaion des saturation-Wertes für ausgegrautes pausiertes Spielfeld
@@ -51,13 +61,25 @@ QColor piece::getColor()
     }
 }
 
-void piece::paint(QPainter* painter)
+void piece::paintEvent(QPaintEvent *event)
 {
+    QPainter painter;
+    painter.begin( this );
+
+    QPen pen(getColor());
+    pen.setWidth(3);
+    painter.setPen(pen);
     if(filled) {
-        painter->fillRect ( pos.x(), pos.y(), width, width, getColor() );
+        QBrush brush(getColor());
+        painter.setBrush(brush);
+        painter.drawPolygon(shape, 4);
     } else {
-        painter->setPen(getColor());
-        painter->drawRect ( pos.x(), pos.y(), width, width );
+        painter.drawPolygon(shape, 4);
     }
+    painter.end();
+}
+void piece::paint()
+{
+    update();
 }
 
