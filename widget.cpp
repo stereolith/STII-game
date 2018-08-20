@@ -16,9 +16,11 @@ meinWidget::meinWidget(QWidget *parent)
     QPushButton *saver = new QPushButton(tr("Sichern"));
     saver->setFont(QFont("Times", 16, QFont::Bold));
     connect(saver, SIGNAL(clicked()), this, SLOT(saveFile()));
+    saver->setEnabled(true);
     QPushButton *loader = new QPushButton(tr("Laden"));
     loader->setFont(QFont("Times", 16, QFont::Bold));
     connect(loader, SIGNAL(clicked()), this, SLOT(loadFile()));
+    loader->setEnabled(true);
 
     meinspielFeld = new spielFeld;
     meinspielFeld->setPointsPtr(points);

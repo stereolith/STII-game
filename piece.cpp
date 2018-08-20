@@ -3,47 +3,40 @@
 piece::piece(QWidget *parent)
     : QWidget(parent)
 {
+    connect( parent, SIGNAL(signalActive(bool)), this, SLOT(setActive(bool)) );
     move(0,0);
     width = 30;
-    shape = new QPointF[4];
-    shape[0] = QPointF(0, 0); //default shape: rectangle
-    shape[1] = QPointF(width, 0);
-    shape[2] = QPointF(width, width);
-    shape[3] = QPointF(0, width);
+    setRectShape(); //set default rect shape
     filled = true;
+    fillPattern = Qt::SolidPattern;
     setColor(QColor(207, 201, 255));
-    setActive(true);
+    //setActive(true);
 }
 piece::piece(QWidget *parent, int x, int y, int w)
     : QWidget(parent)
 {
+    connect( parent, SIGNAL(signalActive(bool)), this, SLOT(setActive(bool)) );
     move(x,y);
     width = w;
-    shape = new QPointF[4];
-    shape[0] = QPointF(0, 0); //default shape: rectangle
-    shape[1] = QPointF(width, 0);
-    shape[2] = QPointF(width, width);
-    shape[3] = QPointF(0, width);
+    setRectShape();
     filled = true;
+    fillPattern = Qt::SolidPattern;
 }
 piece::piece(QWidget *parent, int x, int y, int w, QColor c)
     : QWidget(parent)
 {
+    connect( parent, SIGNAL(signalActive(bool)), this, SLOT(setActive(bool)) );
     move(x,y);
     width = w;
     shape = new QPointF[4];
-    shape[0] = QPointF(0, 0); //default shape: rectangle
-    shape[1] = QPointF(width, 0);
-    shape[2] = QPointF(width, width);
-    shape[3] = QPointF(0, width);
+    setRectShape();
     setColor(c);
     filled = true;
+    fillPattern = Qt::SolidPattern;
 }
 
 void piece::moveBy(int dx, int dy)
 {
-    posX = pos().x();
-    posY = pos().y();
     move(pos().x() + dx, pos().y() + dy);
 }
 
@@ -75,7 +68,7 @@ void piece::paintEvent(QPaintEvent *event)
     pen.setWidth(3);
     painter.setPen(pen);
     if(filled) {
-        QBrush brush(getColor());
+        QBrush brush(getColor(), fillPattern);
         painter.setBrush(brush);
         painter.drawPolygon(shape, 4);
     } else {
@@ -88,3 +81,20 @@ void piece::paint()
     update();
 }
 
+void piece::setRectShape()
+{
+    shape = new QPointF[4];
+    shape[0] = QPointF(0, 0); //default shape: rectangle, width variable considered
+    shape[1] = QPointF(width, 0);
+    shape[2] = QPointF(width, width);
+    shape[3] = QPointF(0, width);
+}
+void piece::setWidth(int w)
+{
+    width = w;
+    setRectShape(); //update default rect shape
+}
+void piece::setActive(bool a)
+{
+    active = a;
+}

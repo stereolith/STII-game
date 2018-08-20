@@ -11,7 +11,8 @@ class lives : public QWidget
 public:
     explicit lives(QWidget *parent = 0);
     int changeLives(int d); //Change no of lives by d
-    void show();
+    void setLives(int l){noLives = l;}
+    int getLives(){return noLives;}
 private:
     int maxLives;
     int noLives;

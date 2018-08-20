@@ -21,6 +21,8 @@ public:
     void setActive(bool a);
     void setPointsPtr(QLabel *ptr){pointsLabel = ptr;}
     spielFeld *t;
+signals:
+    void signalActive(bool a);
 private:
     bool active;
     int buttonPressed;
@@ -28,7 +30,7 @@ private:
     QLabel *pointsLabel;
     int points;
 
-    piece player;
+    piece *player;
     lives *playerLives;
     std::vector<fallingPiece*> fallingPieces;
     int timeToSpawn;

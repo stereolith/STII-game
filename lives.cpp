@@ -25,7 +25,6 @@ lives::lives(QWidget *parent) : QWidget(parent)
 
 void lives::paintEvent(QPaintEvent * event)
 {
-    qDebug() << "Event:" << event->type();
     QPainter painter;
     painter.begin( this );
     for(int i=0; i < maxLives;i++){
