@@ -1,9 +1,12 @@
 #include <QtGui>
 #include <QString>
 #include <QMessageBox>
+#include <cstdlib> //rand
 
 #include <iostream>
 #include "spielFeld.h"
+
+int spawnTimer = 0;
 
 spielFeld::spielFeld(QWidget *parent)
     : QWidget(parent)
@@ -12,43 +15,62 @@ spielFeld::spielFeld(QWidget *parent)
     player.move(this->width()/2-10, 375);
     player.setWidth(10);
     setFocusPolicy(Qt::StrongFocus); //FocusPolicy to accept keyboard input
+
     setActive(false);
 
     points = 0;
     playerLives = new lives(this);
 
     spawnFallingPiece();
+    timeToSpawn = 10;
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
-    timer->start(1000);
+    timer->start(100);
+    srand(time(0));
 }
 
 void spielFeld::updateEvent()
 {
     if(active)
     {
+        if(spawnTimer >= timeToSpawn) {
+            spawnFallingPiece();
+            spawnTimer = 0;
+        }
         for(int i=0; i<fallingPieces.size(); i++){
             fallingPieces[i]->fall();
+            if(fallingPieces[i]->pos().y() > (player.pos().y() - 5)) {
+                if(fallingPieces[i]->pos().x() > (player.pos().x() - 5) &&
+                   fallingPieces[i]->pos().x() < (player.pos().x() + 5))
+                {
+                    active = false;
+                }
+            }
         }
         points += 20;
         update();
+        spawnTimer += 1;
+
+        pointsLabel->setText(QString::number(points) + " Punkte");
+
     }
 }
 void spielFeld::spawnFallingPiece()
 {
+    for(int i=0; i<fallingPieces.size(); i++)
+    {
+        if(fallingPieces[i]->toBeDeleted()) fallingPieces.erase(fallingPieces.begin()+i);
+    }
     fallingPieces.push_back(new fallingPiece(this));
+    fallingPieces.back()->move(rand()%(width()-50), 10);
     fallingPieces.back()->setColor(Qt::red);
-    fallingPieces.back()->setActive(false);
+    fallingPieces.back()->setActive(active);
+    fallingPieces.back()->show();
 }
 
 void spielFeld::paintEvent(QPaintEvent * )
 {
-    pointsLabel->setText(QString::number(points) + " Punkte");
-    for(int i=0; i<fallingPieces.size(); i++){
-        fallingPieces[i]->paint();
-    }
-    player.paint();
 }
 
 void spielFeld::keyPressEvent(QKeyEvent *event)

@@ -19,17 +19,22 @@ public:
     void setY(int y){pos.setY(y);}*/
 
     void setWidth(int w){width = w;}
+    void setShape(QPointF* s);
     void setColor(QColor c);
     int getWidth(){return width;}
     void setFilled(bool f){filled = f;}
     void setActive(bool a){active = a;}
     void paint();
+
+    //test
+    int posX;
+    int posY;
 private:
     QPointF *shape;
 
+    QColor getColor();
     QColor activeColor;
     QColor inactiveColor;
-    QColor getColor();
 
     int width;
     int edges;

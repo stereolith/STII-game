@@ -4,7 +4,7 @@ piece::piece(QWidget *parent)
     : QWidget(parent)
 {
     move(0,0);
-    width = 10;
+    width = 30;
     shape = new QPointF[4];
     shape[0] = QPointF(0, 0); //default shape: rectangle
     shape[1] = QPointF(width, 0);
@@ -42,6 +42,8 @@ piece::piece(QWidget *parent, int x, int y, int w, QColor c)
 
 void piece::moveBy(int dx, int dy)
 {
+    posX = pos().x();
+    posY = pos().y();
     move(pos().x() + dx, pos().y() + dy);
 }
 
@@ -51,6 +53,9 @@ void piece::setColor(QColor c)
     activeColor = c;
     activeColor.toHsl();
     inactiveColor.setHsl(activeColor.hslHue(), 20, activeColor.lightness(), activeColor.alpha() );
+}
+void piece::setShape(QPointF* s) {
+    shape = s;
 }
 QColor piece::getColor()
 {

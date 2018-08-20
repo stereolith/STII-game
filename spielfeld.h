@@ -20,6 +20,7 @@ public:
     bool getActive() {return active;}
     void setActive(bool a);
     void setPointsPtr(QLabel *ptr){pointsLabel = ptr;}
+    spielFeld *t;
 private:
     bool active;
     int buttonPressed;
@@ -30,6 +31,7 @@ private:
     piece player;
     lives *playerLives;
     std::vector<fallingPiece*> fallingPieces;
+    int timeToSpawn;
     void spawnFallingPiece();
 private slots:
     void updateEvent();

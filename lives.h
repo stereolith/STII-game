@@ -17,7 +17,7 @@ private:
     int noLives;
     std::vector<piece*> livePieces;
 protected:
-    void paintEvent(QPaintEvent * );
+    void paintEvent(QPaintEvent * event);
 };
 
 #endif // LIVES_H
