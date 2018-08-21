@@ -1,57 +1,96 @@
 #include "fallingpiece.h"
 #include <cstdlib> //rand
 
+int alternateTimer = 0;
+
 fallingPiece::fallingPiece(QWidget *parent, int t)
     : piece(parent)
 {
     type = t;
-    switch(type) //fallingPiece Type defines color, shape and velocity
+    alternateVelocity = false; //default
+    switch(type) //type defines color, shape and (alternating) velocity
     {
-        case 0: setColor("#F92672"); //red square
-                velocity = QPoint(0,5);
-                break;
-        case 1: setColor("#66D9EF"); //blue triangle
-                velocity = QPoint(0,10);
-                setFallingShape(1);
-                break;
-        case 2: setColor("#FD971F"); //orange octagon
-                velocity = QPoint(0,15);
-                setFallingShape(2);
-                break;
-        case 3: setColor(Qt::red); //red health power up
-                velocity = QPoint(0, 6);
-                setFallingShape(3);
-                break;
+    case 0: setColor("#F92672"); //red square
+            velocity = QPoint(0,5);
+            break;
+    case 1: setColor("#66D9EF"); //blue triangle
+            velocity = QPoint(0,10);
+            setFallingShape(1);
+            break;
+    case 2: setColor("#FD971F"); //orange octagon
+            velocity = QPoint(0,15);
+            setFallingShape(2);
+            break;
+    case 3: setColor(Qt::cyan); //cyan spike
+            alternateVelocity = true;
+            alternateRate = 8;
+            velocity = QPoint(4, 7);
+            altVelocity = QPoint(-4, 7);
+            setFallingShape(3);
+            break;
+    case 4: setColor("#A6E22E"); //green hourglass
+            alternateVelocity = true;
+            alternateRate = 4;
+            velocity = QPoint(6, 2);
+            altVelocity = QPoint(-6, 2);
+            setFallingShape(4);
+            break;
+    case 5: setColor(Qt::red); //red health power up
+            velocity = QPoint(0, 6);
+            setFallingShape(5);
+            break;
     }
     show();
     toDelete = false;
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
+    timer->start(100);
 }
 fallingPiece::fallingPiece(QWidget *parent, int t, QPoint position) //Constructor to initialize with position (from deserialization)
     : piece(parent)
 {
     type = t;
+    alternateVelocity = false; //default
     switch(type)
     {
-        case 0: setColor(Qt::red);
-                velocity = QPoint(0,10);
-                break;
-        case 1: setColor(Qt::magenta);
-                velocity = QPoint(0,15);
-                setFallingShape(1);
-                break;
-        case 2: setColor(Qt::cyan);
-                velocity = QPoint(0,20);
-                setFallingShape(2);
-                break;
-        case 3: setColor(Qt::red); //red health power up
-                velocity = QPoint(0, 6);
-                setFallingShape(3);
-                break;
+    case 0: setColor("#F92672"); //red square
+            velocity = QPoint(0,5);
+            break;
+    case 1: setColor("#66D9EF"); //blue triangle
+            velocity = QPoint(0,10);
+            setFallingShape(1);
+            break;
+    case 2: setColor("#FD971F"); //orange octagon
+            velocity = QPoint(0,15);
+            setFallingShape(2);
+            break;
+    case 3: setColor(Qt::cyan); //cyan spike
+            alternateVelocity = true;
+            alternateRate = 8;
+            velocity = QPoint(4, 7);
+            altVelocity = QPoint(-4, 7);
+            setFallingShape(3);
+            break;
+    case 4: setColor("#A6E22E"); //green hourglass
+            alternateVelocity = true;
+            alternateRate = 4;
+            velocity = QPoint(6, 2);
+            altVelocity = QPoint(-6, 2);
+            setFallingShape(4);
+            break;
+    case 5: setColor(Qt::red); //red health power up
+            velocity = QPoint(0, 6);
+            setFallingShape(5);
+            break;
     }
     toDelete = false;
     show();
     setActive(false);
     move(position);
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
+    timer->start(100);
+    srand(time(0));
 }
 
 void fallingPiece::fall()
@@ -61,42 +100,69 @@ void fallingPiece::fall()
         toDelete = true;
     }
 }
-
+void fallingPiece::updateEvent() //timed interval event for alternating velocities
+{
+    if(alternateVelocity)
+    {
+        alternateTimer++;
+        if(alternateTimer >= alternateRate) {
+            QPoint inter = altVelocity; //Switch alt/ velocity values
+            altVelocity = velocity;
+            velocity = inter;
+            alternateTimer = 0;
+        }
+    }
+}
 void fallingPiece::setFallingShape(int shapeNo)
 {
     QPolygon shape;
+    int width = getWidth();
     switch(shapeNo)
     {
         case 1: //triangle
                 shape << QPoint(0, 0)
-                      << QPoint(getWidth(), 0)
-                      << QPoint(getWidth()/2, getWidth());
-                setShape(shape);
+                      << QPoint(width, 0)
+                      << QPoint(width/2, width);
                 break;
         case 2: //octagon
-                shape << QPoint(getWidth()/3, 0)
-                      << QPoint(getWidth()*.66, 0)
-                      << QPoint(getWidth(), getWidth()/3)
-                      << QPoint(getWidth(), getWidth()*.66)
-                      << QPoint(getWidth()*.66, getWidth())
-                      << QPoint(getWidth()/3, getWidth())
-                      << QPoint(0, getWidth()*.66)
-                      << QPoint(0, getWidth()/3);
-                setShape(shape);
+                shape << QPoint(width/3, 0)
+                      << QPoint(width*.66, 0)
+                      << QPoint(width, width/3)
+                      << QPoint(width, width*.66)
+                      << QPoint(width*.66, width)
+                      << QPoint(width/3, width)
+                      << QPoint(0, width*.66)
+                      << QPoint(0, width/3);
                 break;
-        case 3: //power-up cross
-                shape << QPoint(getWidth()*.4, 0)
-                      << QPoint(getWidth()*.6, 0)
-                      << QPoint(getWidth()*.6, getWidth()*.4)
-                      << QPoint(getWidth(), getWidth()*.4)
-                      << QPoint(getWidth(), getWidth()*.6)
-                      << QPoint(getWidth()*.6, getWidth()*.6)
-                      << QPoint(getWidth()*.6, getWidth())
-                      << QPoint(getWidth()*.4, getWidth())
-                      << QPoint(getWidth()*.4, getWidth()*.6)
-                      << QPoint(0, getWidth()*.6)
-                      << QPoint(0, getWidth()*.4)
-                      << QPoint(getWidth()*.4, getWidth()*.4);
-                setShape(shape);
+        case 3: //spike
+                shape << QPoint(0, 0)
+                      << QPoint(width*.5, width*.6)
+                      << QPoint(width, 0)
+                      << QPoint(width*.5, width);
+                break;
+
+        case 4: //small rectangle
+                shape << QPoint(0,0)
+                      << QPoint(width, 0)
+                      << QPoint(width*.6, width*.5)
+                      << QPoint(width, width)
+                      << QPoint(0, width)
+                      << QPoint(width*.4, width*.5);
+                break;
+        case 5: //power-up cross
+                shape << QPoint(width*.4, 0)
+                      << QPoint(width*.6, 0)
+                      << QPoint(width*.6, width*.4)
+                      << QPoint(width, width*.4)
+                      << QPoint(width, width*.6)
+                      << QPoint(width*.6, width*.6)
+                      << QPoint(width*.6, width)
+                      << QPoint(width*.4, width)
+                      << QPoint(width*.4, width*.6)
+                      << QPoint(0, width*.6)
+                      << QPoint(0, width*.4)
+                      << QPoint(width*.4, width*.4);
+                break;
     }
+    setShape(shape);
 }

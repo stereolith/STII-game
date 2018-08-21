@@ -63,7 +63,7 @@ void spielFeld::updateEvent()
                 if(!invincible) {
                     playerHit = true; //activate timeout an any collision
                     setActive(false);
-                    if(fallingPieces[i]->getType() == 3) { //Check if fallingPiece is health power-up
+                    if(fallingPieces[i]->getType() == 5) { //Check if fallingPiece is health power-up
                         playerLives->changeLives(1); //Add a Life
                     } else {
                         if(playerLives->changeLives(-1) == -1) {
@@ -118,7 +118,7 @@ void spielFeld::spawnFallingPiece()
     }
 
     //Weighted random choice of fallingPieces-Types (see https://stackoverflow.com/a/1761646)
-    std::vector<int> weights {4, 3, 2, 1}; //weights for piece types 0, 1, 2 and 3(health power-up)
+    std::vector<int> weights {5, 4, 3, 3, 2, 2}; //weights for piece types 0, 1, 2, 3, 4 and 5(health power-up)
     int sumOfWeights = 0;
     for(int i=0; i<weights.size(); i++)
     {
