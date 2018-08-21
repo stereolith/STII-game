@@ -42,7 +42,7 @@ fallingPiece::fallingPiece(QWidget *parent, int t)
     }
     show();
     toDelete = false;
-    timer = new QTimer(this);
+    timer = new QTimer(this); //start timer for alternating velocity interval
     connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
     timer->start(100);
 }
@@ -87,13 +87,13 @@ fallingPiece::fallingPiece(QWidget *parent, int t, QPoint position) //Constructo
     show();
     setActive(false);
     move(position);
-    timer = new QTimer(this);
+    timer = new QTimer(this); //start timer for alternating velocity interval
     connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
     timer->start(100);
     srand(time(0));
 }
 
-void fallingPiece::fall()
+void fallingPiece::fall() //Move according to velocity
 {
     moveBy(velocity.x(), velocity.y());
     if(pos().y() > parentWidget()->height()) {
@@ -106,14 +106,14 @@ void fallingPiece::updateEvent() //timed interval event for alternating velociti
     {
         alternateTimer++;
         if(alternateTimer >= alternateRate) {
-            QPoint inter = altVelocity; //Switch alt/ velocity values
+            QPoint inter = altVelocity; //Switch alt/ velocity values, so alternative velocity val is used as velocity in fall()
             altVelocity = velocity;
             velocity = inter;
             alternateTimer = 0;
         }
     }
 }
-void fallingPiece::setFallingShape(int shapeNo)
+void fallingPiece::setFallingShape(int shapeNo) //shape polygons
 {
     QPolygon shape;
     int width = getWidth();

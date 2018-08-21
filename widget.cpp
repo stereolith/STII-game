@@ -3,7 +3,7 @@
 #include <QGridLayout>
 #include "widget.h"
 
-meinWidget::meinWidget(QWidget *parent)
+meinWidget::meinWidget(QWidget *parent) //Grundlegender Fensteraufbau mit Laden-, Sichern- und Start-/Pause-Buttons und Spielfeld
     : QWidget(parent)
 {
     start = new QPushButton(tr("Start"));
