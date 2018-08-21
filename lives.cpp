@@ -24,7 +24,7 @@ void lives::paintEvent(QPaintEvent * event)
 {
     QPainter painter;
     painter.begin( this );
-    for(int i=0; i < maxLives;i++){
+    for(int i=0; i < maxLives;i++){ //fill only noLives # of polygons
         if(i < noLives) {
             livePieces[i]->setFilled(true);
         } else {

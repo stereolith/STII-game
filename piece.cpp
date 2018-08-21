@@ -33,7 +33,7 @@ piece::piece(QWidget *parent, int x, int y, int w, QColor c)
     fillPattern = Qt::SolidPattern;
 }
 
-void piece::moveBy(int dx, int dy)
+void piece::moveBy(int dx, int dy) // offset move
 {
     move(pos().x() + dx, pos().y() + dy);
 }

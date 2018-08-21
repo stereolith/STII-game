@@ -5,7 +5,7 @@
 #include <vector>
 #include "piece.h"
 
-class lives : public QWidget
+class lives : public QWidget //Bereich für (dynamisch) viele Leben/ Herzen
 {
     Q_OBJECT
 public:

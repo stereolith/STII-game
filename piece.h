@@ -6,9 +6,9 @@
 
 // Grundbaustein/ Superklasse für alle Elemente auf dem Spielfeld: player, lives, fallingPieces
 // Definiert Farbe, Füllmuster, Form und implementiert entsprechend ein PaintEvent
-// Eine inactiveColor-Version der Farbe wird generiert, für den "ausgegraut"-Effekt beim Pausieren
+// Eine inactiveColor-Version der Farbe, fpr
 
-class piece : public QWidget
+class piece : public QWidget {
 Q_OBJECT
 public:
     piece(QWidget *parent = 0);

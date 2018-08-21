@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <vector>
 
-class spielFeld : public QWidget
+class spielFeld : public QWidget //Renderbereich des Spieles selbst
 {
 Q_OBJECT
 public:
