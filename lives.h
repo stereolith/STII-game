@@ -13,6 +13,7 @@ public:
     int changeLives(int d); //Change no of lives by d
     void setLives(int l){noLives = l;}
     int getLives(){return noLives;}
+    int getMaxLives(){return maxLives;}
 private:
     int maxLives;
     int noLives;

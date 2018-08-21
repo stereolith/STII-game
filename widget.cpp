@@ -13,11 +13,11 @@ meinWidget::meinWidget(QWidget *parent)
     points = new QLabel("Punkte");
     points->setFont(QFont("Times", 16));
 
-    QPushButton *saver = new QPushButton(tr("Sichern"));
+    saver = new QPushButton(tr("Sichern"));
     saver->setFont(QFont("Times", 16, QFont::Bold));
     connect(saver, SIGNAL(clicked()), this, SLOT(saveFile()));
     saver->setEnabled(true);
-    QPushButton *loader = new QPushButton(tr("Laden"));
+    loader = new QPushButton(tr("Laden"));
     loader->setFont(QFont("Times", 16, QFont::Bold));
     connect(loader, SIGNAL(clicked()), this, SLOT(loadFile()));
     loader->setEnabled(true);
@@ -39,9 +39,13 @@ void meinWidget::startPause(void)
 {
     if(meinspielFeld->getActive()) {
         meinspielFeld->setActive(false);
+        saver->setEnabled(true);
+        loader->setEnabled(true);
         start->setText(tr("Start"));
     }else{
         meinspielFeld->setActive(true);
+        saver->setEnabled(false);
+        loader->setEnabled(false);
         start->setText(tr("Pause"));
     }
 

@@ -14,7 +14,7 @@ public:
     void moveBy(int dx, int dy);
 
     void setWidth(int w);
-    void setShape(QPointF* s);
+    void setShape(QPolygon s);
     void setColor(QColor c);
     int getWidth(){return width;}
     QPointF getCenter(){return QPointF(pos().x()+(width/2), pos().y()+(width/2));}
@@ -25,7 +25,7 @@ public slots:
     void setActive(bool a);
 
 private:
-    QPointF *shape;
+    QPolygon shape;
 
     void setRectShape();
     QColor getColor();

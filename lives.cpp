@@ -7,15 +7,12 @@ lives::lives(QWidget *parent) : QWidget(parent)
     noLives = 3;
     int width = 30;
     int offsetX = 0;
-    QPointF *shape = new QPointF[4];
-    shape[0] = QPointF(width/2, 0);
-    shape[1] = QPointF(width, width/2);
-    shape[2] = QPointF(width/2, width);
-    shape[3] = QPointF(0, width/2);
+    QPolygon shp;
+    shp << QPoint(width/2, 0) << QPoint(width, width/2) << QPoint(width/2, width) << QPoint(0, width/2);
 
     for(int i=0; i < maxLives; i++){
         livePieces.push_back(new piece(this, offsetX, 0, width, Qt::red));
-        livePieces.back()->setShape(shape);
+        livePieces.back()->setShape(shp);
         offsetX += width;
         offsetX += 10;
     }
@@ -40,7 +37,7 @@ void lives::paintEvent(QPaintEvent * event)
 int lives::changeLives(int d)
 {
     noLives += d;
-    update();
+    if(noLives > maxLives) noLives = maxLives;
     if(noLives <= 0) return -1;
     return noLives;
 }

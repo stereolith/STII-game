@@ -28,13 +28,23 @@ private:
     int buttonPressed;
     QTimer *timer;
     QLabel *pointsLabel;
+    QLabel *gameOverLabel;
+    QLabel *gameOverPointsLabel;
     int points;
 
     piece *player;
     lives *playerLives;
     std::vector<fallingPiece*> fallingPieces;
-    int timeToSpawn;
+    const int timeToSpawn = 30;
+    const int hitTimeout = 50;
+    const int invincibleTimeout = 50;
+    const int gameOverTimeout = 100;
+    bool playerHit;
+    bool invincible;
+    bool gameIsOver;
     void spawnFallingPiece();
+    void deleteFallingPieces();
+    void gameOver();
 private slots:
     void updateEvent();
 protected:

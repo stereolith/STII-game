@@ -10,7 +10,6 @@ piece::piece(QWidget *parent)
     filled = true;
     fillPattern = Qt::SolidPattern;
     setColor(QColor(207, 201, 255));
-    //setActive(true);
 }
 piece::piece(QWidget *parent, int x, int y, int w)
     : QWidget(parent)
@@ -28,7 +27,6 @@ piece::piece(QWidget *parent, int x, int y, int w, QColor c)
     connect( parent, SIGNAL(signalActive(bool)), this, SLOT(setActive(bool)) );
     move(x,y);
     width = w;
-    shape = new QPointF[4];
     setRectShape();
     setColor(c);
     filled = true;
@@ -47,7 +45,7 @@ void piece::setColor(QColor c)
     activeColor.toHsl();
     inactiveColor.setHsl(activeColor.hslHue(), 20, activeColor.lightness(), activeColor.alpha() );
 }
-void piece::setShape(QPointF* s) {
+void piece::setShape(QPolygon s) {
     shape = s;
 }
 QColor piece::getColor()
@@ -67,12 +65,15 @@ void piece::paintEvent(QPaintEvent *event)
     QPen pen(getColor());
     pen.setWidth(3);
     painter.setPen(pen);
+
+    painter.setRenderHint(QPainter::Antialiasing); //Enable antialising
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
     if(filled) {
         QBrush brush(getColor(), fillPattern);
         painter.setBrush(brush);
-        painter.drawPolygon(shape, 4);
+        painter.drawPolygon(shape);
     } else {
-        painter.drawPolygon(shape, 4);
+        painter.drawPolygon(shape);
     }
     painter.end();
 }
@@ -83,11 +84,7 @@ void piece::paint()
 
 void piece::setRectShape()
 {
-    shape = new QPointF[4];
-    shape[0] = QPointF(0, 0); //default shape: rectangle, width variable considered
-    shape[1] = QPointF(width, 0);
-    shape[2] = QPointF(width, width);
-    shape[3] = QPointF(0, width);
+    shape << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, width) << QPoint(0, width);
 }
 void piece::setWidth(int w)
 {

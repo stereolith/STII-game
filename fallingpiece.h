@@ -17,6 +17,7 @@ private:
     QPoint velocity;
     bool toDelete;
     int type;
+    void setFallingShape(int noShape);
 };
 
 #endif // FALLINGPIECE_H

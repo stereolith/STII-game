@@ -9,15 +9,12 @@
 int spawnTimer = 0;
 int hitTimer = 0;
 int invincibleTimer = 0;
-const int hitTimeout = 10;
-bool hit = false;
-bool invincible = false;
-int invincibleTimeout = 10;
+int gameOverTimer = 0;
 
 spielFeld::spielFeld(QWidget *parent)
     : QWidget(parent)
 {
-    player = new piece(this, this->width()/2-10, 375, 30, Qt::blue);
+    player = new piece(this, this->width()/2-10, 375, 30, "#66D9EF");
     player->setFillPattern(Qt::BDiagPattern);
     setFocusPolicy(Qt::StrongFocus); //FocusPolicy to accept keyboard input
 
@@ -26,11 +23,13 @@ spielFeld::spielFeld(QWidget *parent)
     points = 0;
     playerLives = new lives(this);
 
-    timeToSpawn = 10;
+    playerHit = false;
+    invincible = false;
+    gameIsOver = false;
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
-    timer->start(100);
+    timer->start(30);
     srand(time(0));
 }
 
@@ -42,9 +41,19 @@ void spielFeld::updateEvent()
             spawnFallingPiece();
             spawnTimer = 0;
         }
+        //Change player filling when not on max health/ lives, and when on last live
+        if(playerLives->getLives() == playerLives->getMaxLives()) {
+            player->setFillPattern(Qt::BDiagPattern);
+            player->setFilled(true);
+        } else if (playerLives->getLives() == 1){
+            player->setFilled(false);
+        } else {
+            player->setFilled(true);
+            player->setFillPattern(Qt::Dense7Pattern);
+        }
         for(int i=0; i<fallingPieces.size(); i++){
             fallingPieces[i]->fall();
-            //Collision detection
+            //Collision detection for each fallingPiece
             int collidingDistance = player->getWidth() / 2 + fallingPieces[i]->getWidth() / 2;
             if(fallingPieces[i]->getCenter().y() > (player->getCenter().y() - collidingDistance) &&
                fallingPieces[i]->getCenter().y() < (player->getCenter().y() + collidingDistance) &&
@@ -52,13 +61,20 @@ void spielFeld::updateEvent()
                fallingPieces[i]->getCenter().x() < (player->getCenter().x() + collidingDistance))
             {
                 if(!invincible) {
-                    hit = true;
+                    playerHit = true; //activate timeout an any collision
                     setActive(false);
-                    playerLives->changeLives(-1);
+                    if(fallingPieces[i]->getType() == 3) { //Check if fallingPiece is health power-up
+                        playerLives->changeLives(1); //Add a Life
+                    } else {
+                        if(playerLives->changeLives(-1) == -1) {
+                            //Game Over
+                            gameOver();
+                        };
+                    }
                 }
             }
         }
-        points += 20;
+        points += 1;
         update();
         spawnTimer += 1;
 
@@ -67,16 +83,29 @@ void spielFeld::updateEvent()
             if(invincibleTimer >= invincibleTimeout) {
                 invincibleTimer = 0;
                 invincible = false;
+                player->setActive(true);
             }
         }
 
         pointsLabel->setText(QString::number(points) + " Punkte");
 
-    } else if (hit) {
+    } else if (gameIsOver) { //Game Over screen
+        gameOverTimer++;
+        if(gameOverTimer >= gameOverTimeout) {
+            //remove game over screen text
+            delete gameOverLabel;
+            delete gameOverPointsLabel;
+            gameOverTimer = 0;
+            gameIsOver = false;
+            setActive(true);
+        }
+    } else if (playerHit) { //Player hit: timeout
         hitTimer++;
         if(hitTimer >= hitTimeout) {
+            playerHit = false;
             invincible = true;
             setActive(true);
+            player->setActive(false); //Leve player grey for the duration of invincibility
             hitTimer = 0;
         }
     }
@@ -89,7 +118,7 @@ void spielFeld::spawnFallingPiece()
     }
 
     //Weighted random choice of fallingPieces-Types (see https://stackoverflow.com/a/1761646)
-    std::vector<int> weights {5, 3, 1}; //weights for piece types 0, 1 and 2
+    std::vector<int> weights {4, 3, 2, 1}; //weights for piece types 0, 1, 2 and 3(health power-up)
     int sumOfWeights = 0;
     for(int i=0; i<weights.size(); i++)
     {
@@ -108,8 +137,7 @@ void spielFeld::spawnFallingPiece()
     }
 
     fallingPieces.push_back(new fallingPiece(this, randomWeighted));
-    fallingPieces.back()->move(rand()%(width()-50), 10);
-    //fallingPieces.back()->setActive(active);
+    fallingPieces.back()->move(rand()%(width()-50), -30);
     fallingPieces.back()->show();
 }
 
@@ -122,8 +150,10 @@ void spielFeld::keyPressEvent(QKeyEvent *event)
     if(active) {
         if(event->key() == Qt::Key_Right) {
             player->moveBy(25, 0);
+            if(player->pos().x() > width() - 30) player->move(width() -30, player->pos().y());
         } else if (event->key() == Qt::Key_Left) {
             player->moveBy(-25, 0);
+            if(player->pos().x() < 10) player->move(0, player->pos().y());
         }
         update();
     }
@@ -134,10 +164,10 @@ void spielFeld::setActive(bool a)
     emit signalActive(a); //Fire signalActive signal to "setActive"-Slot in all piece-Objects
 
     if(a) {
-        setPalette(QPalette(QColor(211, 250, 200)));
+        setPalette(QPalette(QColor("#272822")));
         setAutoFillBackground(true);
     }else{
-        setPalette(QPalette(QColor(241, 255, 237)));
+        setPalette(QPalette(QColor("#6f706c")));
         setAutoFillBackground(true);
     }
 }
@@ -148,6 +178,7 @@ void spielFeld::serialize(QFile &file)
     out << "stII-savegame" << endl;
     out << "playerPos x " << player->x() << endl;
     out << "noLives " << playerLives->getLives() << endl;
+    out << "points " << points << endl;
     for(int i=0; i<fallingPieces.size(); i++)
     {
         out << "fallingPiece: x " << fallingPieces[i]->pos().x()
@@ -189,19 +220,27 @@ void spielFeld::deserialize(QFile &file)
     if (!playerLivesString.contains("noLives "))
     {
         QMessageBox::warning(this, tr("Objektfehler"),
-                             " (Unbekanntes Steuerzeichen für noLives", QMessageBox::Ok);
+                             "Unbekanntes Steuerzeichen für noLives", QMessageBox::Ok);
         return;
     } else {
         playerLivesString.remove("noLives ");
         playerLives->setLives(playerLivesString.toInt());
     }
 
-    //Read fallingPieces
-    for(int i=0; i<fallingPieces.size(); i++)
+    //Read points
+    QString pointsString = in.readLine();
+    if (!pointsString.contains("points "))
     {
-        fallingPieces[i]->hide(); //Hide all fallingPieces
+        QMessageBox::warning(this, tr("Objektfehler"),
+                             "Unbekanntes Steuerzeichen für points", QMessageBox::Ok);
+        return;
+    } else {
+        pointsString.remove("points ");
+        points = pointsString.toInt();
     }
-    fallingPieces.clear(); //Flush vector
+
+    //Read fallingPieces
+    deleteFallingPieces();
     while(true)
     {
         QString fallingPieceString = in.readLine();
@@ -227,5 +266,35 @@ void spielFeld::deserialize(QFile &file)
     }
 
     update();
+}
+void spielFeld::gameOver()
+{
+    gameIsOver = true;
+    playerHit = false;
+
+    gameOverLabel = new QLabel("Game Over!");
+    gameOverLabel->setFont(QFont("TypeWriter", 20));
+    gameOverLabel->setParent(this);
+    gameOverLabel->move(width()/2 - 80, 120);
+    gameOverLabel->show();
+
+    gameOverPointsLabel = new QLabel(QString("Punkte: ").append(QString::number(points)));
+    gameOverPointsLabel->setFont(QFont("TypeWriter", 18));
+    gameOverPointsLabel->setParent(this);
+    gameOverPointsLabel->move(width()/2 - 70, 170);
+    gameOverPointsLabel->show();
+
+    //Reset game
+    deleteFallingPieces();
+    points = 0;
+    playerLives->setLives(3);
+}
+void spielFeld::deleteFallingPieces()
+{
+    for(int i=0; i<fallingPieces.size(); i++)
+    {
+        delete fallingPieces[i];
+    }
+    fallingPieces.clear(); //Flush vector
 }
 

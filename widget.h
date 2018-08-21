@@ -14,6 +14,8 @@ public:
     QLabel *getPointsPrt(){return points;}
 private:
     QPushButton *start;
+    QPushButton *saver;
+    QPushButton *loader;
     QLabel *points;
 private slots:
     void startPause(void);
