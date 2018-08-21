@@ -1,8 +1,9 @@
 # STII-game
 Semesterarbeit Seminar Softwaretechnologie II
-<p align="center">
+<p align="center"style="width:60&">
   <img src="https://github.com/stereolith/STII-game/raw/master/docs/stII.gif">
 </p>
+
 ## Dokumentation
 ### Starten
 1. Projekt herunterladen und entpacken
