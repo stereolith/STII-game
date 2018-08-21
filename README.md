@@ -1,6 +1,6 @@
 # STII-game
 Semesterarbeit Seminar Softwaretechnologie II
-<p align="center"style="width:60&">
+<p align="center" width="200">
   <img src="https://github.com/stereolith/STII-game/raw/master/docs/stII.gif">
 </p>
 
