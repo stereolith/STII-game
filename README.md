@@ -18,5 +18,5 @@ Semesterarbeit Seminar Softwaretechnologie II
 - Spieler lässt sich mit den Pfeiltasten ←  → steuern
 #### Ziel/ Spielfluss
 - Herunterfallenden Blöcken ausweichen
-- Berührt man einen Block, verliert man ein Leben (◆◆◇)
+- Berührt man einen Block, verliert man ein Leben (◆◆◇) und ist für kurze Zeit unverwundbar (Spieler ist grau gefärbt)
 - Das Einsammeln von roten Power-Up-Blöcken (➕) lädt Leben wieder auf
